@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户登录系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            width: 48%;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button#signIn {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        button#loginIn {
+            background-color: #28A745;
+            color: white;
+        }
+
+        #log {
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>用户登录</h1>
+        <form id="userForm">
+            <label for="username">用户名:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="password">密码:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="button" id="signIn">注册</button>
+            <button type="button" id="loginIn">登录</button>
+        </form>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        // JavaScript 代码
+        const Model = {
+            users: []
+        };
+
+        // 预读本地硬盘的用户信息
+        const storedUsers = localStorage.getItem('users');
+        if (storedUsers) {
+            Model.users = JSON.parse(storedUsers);
+        }
+
+        const UI = {
+            form: document.getElementById('userForm'),
+            log: document.getElementById('log'),
+            username: document.getElementById('username'),
+            password: document.getElementById('password')
+        };
+
+        // 注册按钮点击事件
+        document.getElementById('signIn').onclick = function () {
+            const userName = UI.username.value.trim();
+            const passWord = UI.password.value.trim();
+
+            if (!userName || !passWord) {
+                UI.log.innerHTML = '请输入用户名和密码！';
+                return;
+            }
+
+            const userExists = Model.users.some(u => u.userName === userName);
+
+            if (userExists) {
+                UI.log.innerHTML = `${userName} 已经存在，注册不成功！`;
+            } else {
+                const newUser = { userName, passWord };
+                Model.users.push(newUser);
+                localStorage.setItem('users', JSON.stringify(Model.users));
+                UI.log.innerHTML = `${userName} 注册成功！`;
+                UI.username.value = '';
+                UI.password.value = '';
+            }
+        };
+
+        // 登录按钮点击事件
+        document.getElementById('loginIn').onclick = function () {
+            const userName = UI.username.value.trim();
+            const passWord = UI.password.value.trim();
+
+            if (!userName || !passWord) {
+                UI.log.innerHTML = '请输入用户名和密码！';
+                return;
+            }
+
+            const user = Model.users.find(u => u.userName === userName && u.passWord === passWord);
+
+            if (user) {
+                UI.log.innerHTML = `${userName} 成功登录！`;
+            } else {
+                UI.log.innerHTML = `${userName} 登录不成功，请查看用户名和密码！`;
+            }
+        };
+    </script>
+</body>
+</html>
